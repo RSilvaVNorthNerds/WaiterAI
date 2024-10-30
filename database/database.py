@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 class Database:
     def __init__(self):
@@ -13,8 +14,16 @@ class Database:
         self.close_connection()
 
     def fetch_menu_items(self):
-        menu_items = self.cursor.execute("SELECT * FROM menu_items")
-        return menu_items.fetchall()
+        menu_items_cursor = self.cursor.execute("SELECT * FROM menu_items")
+        menu_items = menu_items_cursor.fetchall()
+
+        # Convert sqlite3.Row objects to dictionaries
+        menu_items_dict = [dict(item) for item in menu_items]
+
+        # Stringify the menu_items JSON data
+        menu_items_json = json.dumps(menu_items_dict)
+
+        return menu_items_json
     
     def close_connection(self):
         self.connection.close()
