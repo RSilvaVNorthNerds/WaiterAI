@@ -20,8 +20,13 @@ from database.database import Database
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/fetch_menu_items")
 def read_root():
     with Database() as db:
         menu_items = db.fetch_menu_items()
     return {"items": menu_items}
+
+@app.post("/submit_waiter_request")
+def submit_waiter_request():
+    pass
+
