@@ -14,3 +14,14 @@ Services:
 
 
 """
+
+from fastapi import FastAPI
+from database.database import Database
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    with Database() as db:
+        menu_items = db.fetch_menu_items()
+    return {"items": menu_items}
