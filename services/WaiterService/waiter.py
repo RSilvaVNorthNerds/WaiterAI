@@ -27,7 +27,7 @@ class WaiterAI:
             ]
         )
 
-        return print(message.content)
+        return {"content": message}
 
     def interperate_new_menu(self, menu):
         pass
