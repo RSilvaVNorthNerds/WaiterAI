@@ -30,10 +30,7 @@ class WaiterAI:
 
         return {"content": message}
 
-    def interperate_new_menu(self, menu):
-        pass
-
-    def take_order(self, order):
+    def take_order_prompt(self, order):
         pass
 
     def send_order_to_kitchen(self, order):
