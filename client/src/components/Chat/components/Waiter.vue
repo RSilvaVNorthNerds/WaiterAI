@@ -13,23 +13,9 @@ function order() {
 }
 
 function question() {
+  console.error("Listening...");
   const speechManager = new SpeechManager();
-  const question = speechManager.speech_to_text();
-
-  // Send the question to the server
-  fetch("", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ question }),
-  }).then((response) => {
-    if (response.ok) {
-      response.json().then((data) => {
-        console.log(data);
-      });
-    }
-  });
+  speechManager.speech_to_text();
 }
 </script>
 
@@ -43,7 +29,7 @@ function question() {
   <div class="waiter-controls">
     <button @click="listen" class="waiter-action-btn">Listen</button>
     <button class="waiter-action-btn">Order</button>
-    <button class="waiter-action-btn">Question</button>
+    <button @click="question" class="waiter-action-btn">Question</button>
   </div>
   <Transcript />
 </template>

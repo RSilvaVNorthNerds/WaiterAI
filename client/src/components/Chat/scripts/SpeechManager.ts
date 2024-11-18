@@ -26,9 +26,22 @@ class SpeechManager {
     );
 
     recognizer.recognizeOnceAsync((result) => {
+      const question = result.text;
       if (result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
-        console.error(`RECOGNIZED: Text=${result.text}`);
-        return result.text;
+        // Send the question to the server
+        fetch("http://localhost:8000/submit_waiter_request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ prompt: question }),
+        }).then((response) => {
+          if (response.ok) {
+            response.json().then((data) => {
+              console.log(data);
+            });
+          }
+        });
       } else {
         console.error(
           "ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly."
