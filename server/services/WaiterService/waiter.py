@@ -32,7 +32,7 @@ class WaiterAI:
             ]
         )
 
-        return {"content": message}
+        return message.content[0].text
 
     def take_order_prompt(self, order):
         pass

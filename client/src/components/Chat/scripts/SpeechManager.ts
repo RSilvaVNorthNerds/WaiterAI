@@ -10,6 +10,30 @@ class SpeechManager {
     this.speechAPIRegion = envVars.VITE_AZURE_SPEECH_REGION;
   }
 
+  text_to_speech(text: string) {
+    const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
+      this.speechAPIKey,
+      this.speechAPIRegion
+    );
+
+    const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
+
+    const speechSynthesizer = new SpeechSDK.SpeechSynthesizer(
+      speechConfig,
+      audioConfig
+    );
+
+    speechSynthesizer.speakTextAsync(text, (result) => {
+      if (result.reason === SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
+        console.log("SUCCESS: Speech synthesized successfully.");
+      } else {
+        console.error(
+          "ERROR: Speech synthesis failed. Ensure the text is valid and try again."
+        );
+      }
+    });
+  }
+
   speech_to_text() {
     const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
       this.speechAPIKey,
@@ -39,6 +63,7 @@ class SpeechManager {
           if (response.ok) {
             response.json().then((data) => {
               console.log(data);
+              this.text_to_speech(data);
             });
           }
         });
