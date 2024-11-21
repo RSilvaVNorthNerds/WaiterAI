@@ -1,6 +1,6 @@
 <template>
   <div class="transcript">
-    <h3>Transcript</h3>
+    <h3>Conversation</h3>
     <div class="conversation-box">
       <div
         v-for="message in conversation"
