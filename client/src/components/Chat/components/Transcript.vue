@@ -2,23 +2,17 @@
   <div class="transcript">
     <h3>Transcript</h3>
     <div class="conversation-box">
-      <div class="user">
-        <div
-          v-for="message in conversation.user"
-          :key="message.id"
-          class="message user-message"
-        >
-          {{ message.text }}
-        </div>
-      </div>
-      <div class="waiter">
-        <div
-          v-for="message in conversation.waiter"
-          :key="message.id"
-          class="message waiter-message"
-        >
-          {{ message.text }}
-        </div>
+      <div
+        v-for="message in conversation"
+        :class="[
+          'message',
+          {
+            'user-message': message.speaker === 'user',
+            'waiter-message': message.speaker === 'waiter',
+          },
+        ]"
+      >
+        {{ message.text }}
       </div>
     </div>
   </div>
@@ -26,15 +20,12 @@
 
 <script setup lang="ts">
 interface Message {
-  id: string;
   text: string;
+  speaker: "user" | "waiter";
 }
 
 const props = defineProps<{
-  conversation: {
-    user: Message[];
-    waiter: Message[];
-  };
+  conversation: Message[];
 }>();
 </script>
 
@@ -50,11 +41,28 @@ const props = defineProps<{
 .conversation-box {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: 100%;
   max-width: 600px;
   padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #181818;
+}
+
+.message {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-radius: 5px;
+}
+
+.user-message {
+  background-color: #00c344;
+  color: white;
+}
+
+.waiter-message {
+  background-color: #1d7ef5;
+  color: white;
 }
 </style>

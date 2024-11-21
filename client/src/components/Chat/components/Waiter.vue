@@ -4,26 +4,17 @@ import SpeechManager from "../scripts/SpeechManager";
 import { reactive } from "vue";
 
 const state = reactive({
-  conversation: {
-    user: [],
-    waiter: [],
-  },
+  conversation: [],
 });
 
 function order() {
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text(
-    state.conversation.user,
-    state.conversation.waiter
-  );
+  speechManager.speech_to_text(state.conversation);
 }
 
 function question() {
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text(
-    state.conversation.user,
-    state.conversation.waiter
-  );
+  speechManager.speech_to_text(state.conversation);
 }
 </script>
 
