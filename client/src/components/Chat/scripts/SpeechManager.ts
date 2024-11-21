@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import * as SpeechSDK from "microsoft-cognitiveservices-speech-sdk";
 const envVars = import.meta.env;
 
@@ -34,7 +35,10 @@ class SpeechManager {
     });
   }
 
-  speech_to_text() {
+  speech_to_text(
+    userMessages: { text: string }[],
+    waiterMessages: { text: string }[]
+  ) {
     const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
       this.speechAPIKey,
       this.speechAPIRegion
@@ -51,6 +55,9 @@ class SpeechManager {
 
     recognizer.recognizeOnceAsync((result) => {
       const question = result.text;
+      userMessages.push({
+        text: question,
+      });
       if (result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
         // Send the question to the server
         fetch("http://localhost:8000/submit_waiter_request", {
@@ -62,7 +69,9 @@ class SpeechManager {
         }).then((response) => {
           if (response.ok) {
             response.json().then((data) => {
-              console.log(data);
+              waiterMessages.push({
+                text: data,
+              });
               this.text_to_speech(data);
             });
           }

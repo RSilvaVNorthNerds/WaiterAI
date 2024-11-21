@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import Transcript from "./Transcript.vue";
 import SpeechManager from "../scripts/SpeechManager";
+import { reactive } from "vue";
 
-function listen() {
-  const speechManager = new SpeechManager();
-  speechManager.speech_to_text();
-}
+const state = reactive({
+  conversation: {
+    user: [],
+    waiter: [],
+  },
+});
 
 function order() {
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text();
+  speechManager.speech_to_text(
+    state.conversation.user,
+    state.conversation.waiter
+  );
 }
 
 function question() {
-  console.error("Listening...");
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text();
+  speechManager.speech_to_text(
+    state.conversation.user,
+    state.conversation.waiter
+  );
 }
 </script>
 
@@ -27,9 +35,8 @@ function question() {
     </video>
   </div>
   <div class="waiter-controls">
-    <button @click="listen" class="waiter-action-btn">Listen</button>
-    <button class="waiter-action-btn">Order</button>
+    <button @click="order" class="waiter-action-btn">Order</button>
     <button @click="question" class="waiter-action-btn">Question</button>
   </div>
-  <Transcript />
+  <Transcript :conversation="state.conversation" />
 </template>
