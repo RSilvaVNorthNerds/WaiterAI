@@ -57,7 +57,7 @@ class SpeechManager {
       });
       if (result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
         // Send the question to the server
-        fetch("http://localhost:8000/submit_waiter_request", {
+        fetch(`${envVars.VITE_WAITER_SERVICE_URL}/submit_waiter_request`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

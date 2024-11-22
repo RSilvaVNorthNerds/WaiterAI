@@ -26,8 +26,29 @@ function question() {
     </video>
   </div>
   <div class="waiter-controls">
-    <button @click="order" class="waiter-action-btn">Order</button>
-    <button @click="question" class="waiter-action-btn">Question</button>
+    <button @click="order" class="waiter-action-btn">
+      <span class="material-symbols-outlined"> restaurant </span>
+      Order
+    </button>
+    <button @click="question" class="waiter-action-btn">
+      <span class="material-symbols-outlined"> help </span>
+      Question
+    </button>
   </div>
   <Transcript :conversation="state.conversation" />
 </template>
+
+<style scoped>
+.waiter-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.waiter-action-btn {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 0px 10px;
+}
+</style>
