@@ -1,20 +1,37 @@
 <script setup lang="ts">
 import Transcript from "./Transcript.vue";
 import SpeechManager from "../scripts/SpeechManager";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 const state = reactive({
   conversation: [],
 });
 
+const isListening = ref(false);
+const isLoading = ref(false);
+
+const handleListening = (listening: boolean) => {
+  if (listening) {
+    handleLoading(false);
+  }
+
+  isListening.value = listening;
+};
+
+const handleLoading = (loading: boolean) => {
+  isLoading.value = loading;
+};
+
 function order() {
+  handleLoading(true);
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text(state.conversation);
+  speechManager.speech_to_text(state.conversation, handleListening);
 }
 
 function question() {
+  handleLoading(true);
   const speechManager = new SpeechManager();
-  speechManager.speech_to_text(state.conversation);
+  speechManager.speech_to_text(state.conversation, handleListening);
 }
 
 function tts() {
@@ -25,10 +42,15 @@ function tts() {
 
 <template>
   <div class="waiter">
-    <video muted autoplay width="400px" height="300px" loop>
-      <source src="../../../assets/videos/waiter.mp4" type="video/mp4" />
-      Video is not supported
-    </video>
+    <div v-if="isListening">
+      <h2>Listening for your request...</h2>
+    </div>
+    <div v-if="!isListening">
+      <h2>Welcome to Mama Bistro! How can I help you?</h2>
+    </div>
+    <div v-if="isLoading">
+      <h2>Loading...</h2>
+    </div>
   </div>
   <div class="waiter-controls">
     <button @click="order" class="waiter-action-btn">
@@ -39,10 +61,10 @@ function tts() {
       <span class="material-symbols-outlined"> help </span>
       Question
     </button>
-    <button @click="tts" class="waiter-action-btn">
+    <!-- <button @click="tts" class="waiter-action-btn">
       <span class="material-symbols-outlined"> mic </span>
       Speak
-    </button>
+    </button> -->
   </div>
   <Transcript :conversation="state.conversation" />
 </template>

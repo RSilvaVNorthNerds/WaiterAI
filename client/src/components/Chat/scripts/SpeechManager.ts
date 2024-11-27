@@ -4,26 +4,38 @@ const envVars = import.meta.env;
 class SpeechManager {
   speechAPIKey: string;
   speechAPIRegion: string;
+  recognizer: SpeechSDK.SpeechRecognizer;
+  speechSynthesizer: SpeechSDK.SpeechSynthesizer;
 
   constructor() {
     this.speechAPIKey = envVars.VITE_AZURE_SPEECH_KEY;
     this.speechAPIRegion = envVars.VITE_AZURE_SPEECH_REGION;
-  }
 
-  text_to_speech(text: string) {
     const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
       this.speechAPIKey,
       this.speechAPIRegion
     );
 
-    const audioConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
+    speechConfig.speechRecognitionLanguage = "en-US";
 
-    const speechSynthesizer = new SpeechSDK.SpeechSynthesizer(
+    const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+    const recognizer = new SpeechSDK.SpeechRecognizer(
       speechConfig,
       audioConfig
     );
 
-    speechSynthesizer.speakTextAsync(text, (result) => {
+    const speakerConfig = SpeechSDK.AudioConfig.fromDefaultSpeakerOutput();
+    const speechSynthesizer = new SpeechSDK.SpeechSynthesizer(
+      speechConfig,
+      speakerConfig
+    );
+
+    this.recognizer = recognizer;
+    this.speechSynthesizer = speechSynthesizer;
+  }
+
+  text_to_speech(text: string) {
+    this.speechSynthesizer.speakTextAsync(text, (result) => {
       if (result.reason === SpeechSDK.ResultReason.SynthesizingAudioCompleted) {
         console.log("SUCCESS: Speech synthesized successfully.");
       } else {
@@ -34,29 +46,39 @@ class SpeechManager {
     });
   }
 
-  speech_to_text(conversation: { text: string; speaker: "waiter" | "user" }[]) {
-    const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(
-      this.speechAPIKey,
-      this.speechAPIRegion
-    );
+  speech_to_text(
+    conversation: { text: string; speaker: "waiter" | "user" }[],
+    listening: (listening: boolean) => void
+  ) {
+    this.recognizer.startContinuousRecognitionAsync(() => {
+      console.log("Recognizer is actively listening...");
+      listening(true);
+    });
 
-    speechConfig.speechRecognitionLanguage = "en-US";
+    this.recognizer.recognized = (s, e) => {
+      // Ignore empty results
+      if (!e.result.text.trim()) {
+        console.warn("Ignoring empty result.");
+        return;
+      }
 
-    console.error("LISTENING...");
-    const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-    const recognizer = new SpeechSDK.SpeechRecognizer(
-      speechConfig,
-      audioConfig
-    );
+      this.recognizer.stopContinuousRecognitionAsync(
+        () => {
+          console.log("Recognizer stopped.");
+          listening(false);
+        },
+        (err) => {
+          console.error(`Error stopping recognizer: ${err}`);
+        }
+      );
 
-    recognizer.recognizeOnceAsync((result) => {
-      const question = result.text;
+      const question = e.result.text;
       conversation.push({
         text: question,
         speaker: "user",
       });
-      if (result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
-        // Send the question to the server
+
+      if (e.result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
         fetch(`${envVars.VITE_WAITER_SERVICE_URL}/submit_waiter_request`, {
           method: "POST",
           headers: {
@@ -79,7 +101,16 @@ class SpeechManager {
           "ERROR: Speech was cancelled or could not be recognized. Ensure your microphone is working properly."
         );
       }
-    });
+    };
+
+    this.recognizer.canceled = (s, e) => {
+      console.error(`Recognition canceled: ${e.errorDetails}`);
+    };
+
+    this.recognizer.sessionStopped = (s, e) => {
+      console.log("Session stopped.");
+      this.recognizer.stopContinuousRecognitionAsync();
+    };
   }
 }
 
