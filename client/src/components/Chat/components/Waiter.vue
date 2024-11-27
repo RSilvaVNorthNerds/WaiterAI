@@ -34,10 +34,10 @@ function question() {
   speechManager.speech_to_text(state.conversation, handleListening);
 }
 
-function tts() {
-  const speechManager = new SpeechManager();
-  speechManager.text_to_speech("Hello, how can I help you?");
-}
+// function tts() {
+//   const speechManager = new SpeechManager();
+//   speechManager.text_to_speech("Hello, how can I help you?");
+// }
 </script>
 
 <template>

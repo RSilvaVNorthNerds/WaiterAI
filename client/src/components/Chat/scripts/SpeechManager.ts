@@ -55,7 +55,7 @@ class SpeechManager {
       listening(true);
     });
 
-    this.recognizer.recognized = (s, e) => {
+    this.recognizer.recognized = (_, e) => {
       // Ignore empty results
       if (!e.result.text.trim()) {
         console.warn("Ignoring empty result.");
@@ -103,11 +103,11 @@ class SpeechManager {
       }
     };
 
-    this.recognizer.canceled = (s, e) => {
+    this.recognizer.canceled = (_, e) => {
       console.error(`Recognition canceled: ${e.errorDetails}`);
     };
 
-    this.recognizer.sessionStopped = (s, e) => {
+    this.recognizer.sessionStopped = () => {
       console.log("Session stopped.");
       this.recognizer.stopContinuousRecognitionAsync();
     };
