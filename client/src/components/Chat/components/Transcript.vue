@@ -3,7 +3,7 @@
     <h3>Conversation</h3>
     <div class="conversation-box">
       <div
-        v-for="message in conversation"
+        v-for="message in props.conversation"
         :class="[
           'message',
           {
@@ -24,6 +24,7 @@ interface Message {
   speaker: "user" | "waiter";
 }
 
+// @ts-ignore
 const props = defineProps<{
   conversation: Message[];
 }>();

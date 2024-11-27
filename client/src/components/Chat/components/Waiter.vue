@@ -16,6 +16,11 @@ function question() {
   const speechManager = new SpeechManager();
   speechManager.speech_to_text(state.conversation);
 }
+
+function tts() {
+  const speechManager = new SpeechManager();
+  speechManager.text_to_speech("Hello, how can I help you?");
+}
 </script>
 
 <template>
@@ -33,6 +38,10 @@ function question() {
     <button @click="question" class="waiter-action-btn">
       <span class="material-symbols-outlined"> help </span>
       Question
+    </button>
+    <button @click="tts" class="waiter-action-btn">
+      <span class="material-symbols-outlined"> mic </span>
+      Speak
     </button>
   </div>
   <Transcript :conversation="state.conversation" />
